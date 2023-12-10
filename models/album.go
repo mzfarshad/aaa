@@ -11,6 +11,7 @@ type Album struct {
 // Albums slice to seed record Album data
 var Albums = []Album{
 	{ID: "1", Title: "faryad", Artist: "dariush", Price: 23.4},
+	{ID: "4", Title: "faryad", Artist: "hayedeh", Price: 28.4},
 	{ID: "2", Title: "pariche", Artist: "moien", Price: 25.7},
 	{ID: "3", Title: "talab", Artist: "ebi", Price: 20.5},
 }

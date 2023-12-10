@@ -9,6 +9,20 @@ import (
 
 // GetAlbums responsde with the list of all album as JSON.
 func GetAlbums(c *gin.Context) {
+
+	var list []models.Album
+	title := c.Query("title")
+
+	if title != "" {
+		for _, album := range models.Albums {
+			if album.Title == title {
+				list = append(list, album)
+			}
+		}
+		c.IndentedJSON(http.StatusOK, list)
+		return
+	}
+
 	c.IndentedJSON(http.StatusOK, models.Albums)
 }
 
