@@ -20,11 +20,11 @@ func GetAlbums(c *gin.Context) {
 				list = append(list, album)
 			}
 		}
-		c.IndentedJSON(http.StatusOK, presenter.Response{Data: list, IsSuccess: true})
+		c.IndentedJSON(http.StatusOK, presenter.NewSuccess(list))
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, presenter.Response{Data: models.Albums, IsSuccess: true})
+	c.IndentedJSON(http.StatusOK, presenter.NewSuccess(models.Albums))
 }
 
 // CreateNewAlbum adds an album from json recived in the requst body.
@@ -32,19 +32,18 @@ func CreateNewAlbum(c *gin.Context) {
 	var newAlbum models.Album
 	//call bindjson to bind the recived json to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, presenter.Response{
-			IsSuccess: false,
-			Messages:  []string{"invalid body"},
-		})
+		c.IndentedJSON(http.StatusBadRequest, presenter.
+			NewFailed("invalid body").
+			AppendMessage("test error"))
 		return
 	}
 	//add newAlbum to slice
 	models.Albums = append(models.Albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, presenter.Response{
-		Data:      newAlbum,
-		IsSuccess: true,
-		Messages:  []string{"successfully created"},
-	})
+	c.IndentedJSON(http.StatusCreated, presenter.
+		NewSuccess(newAlbum).
+		AppendMessage("successfully created").
+		AppendMessage("test message"),
+	)
 }
 
 /*
