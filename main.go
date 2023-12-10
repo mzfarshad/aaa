@@ -40,6 +40,7 @@ func createNewAlbum(c *gin.Context) {
 	var newAlbum album
 	//call bindjson to bind the recived json to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid body"})
 		return
 	}
 	//add newAlbum to slice
