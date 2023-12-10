@@ -1,7 +1,7 @@
 package main
 
 import (
-	"web-service-gin/handler"
+	"web-service-gin/api/handler"
 
 	"github.com/gin-gonic/gin"
 )

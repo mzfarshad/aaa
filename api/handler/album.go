@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"web-service-gin/api/presenter"
 	"web-service-gin/models"
 
 	"github.com/gin-gonic/gin"
@@ -19,11 +20,11 @@ func GetAlbums(c *gin.Context) {
 				list = append(list, album)
 			}
 		}
-		c.IndentedJSON(http.StatusOK, list)
+		c.IndentedJSON(http.StatusOK, presenter.Response{Data: list, IsSuccess: true})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, models.Albums)
+	c.IndentedJSON(http.StatusOK, presenter.Response{Data: models.Albums, IsSuccess: true})
 }
 
 // CreateNewAlbum adds an album from json recived in the requst body.
@@ -31,12 +32,19 @@ func CreateNewAlbum(c *gin.Context) {
 	var newAlbum models.Album
 	//call bindjson to bind the recived json to newAlbum.
 	if err := c.BindJSON(&newAlbum); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid body"})
+		c.IndentedJSON(http.StatusBadRequest, presenter.Response{
+			IsSuccess: false,
+			Messages:  []string{"invalid body"},
+		})
 		return
 	}
 	//add newAlbum to slice
 	models.Albums = append(models.Albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
+	c.IndentedJSON(http.StatusCreated, presenter.Response{
+		Data:      newAlbum,
+		IsSuccess: true,
+		Messages:  []string{"successfully created"},
+	})
 }
 
 /*
@@ -49,11 +57,17 @@ func GetAlbumByID(c *gin.Context) {
 
 	/* Loop over the list of models.Albums, looking for
 	   an album whose ID value matches the parameter.*/
-	for _, a := range models.Albums {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
+	for _, album := range models.Albums {
+		if album.ID == id {
+			c.IndentedJSON(http.StatusOK, presenter.Response{
+				Data:      album,
+				IsSuccess: true,
+			})
 			return
 		}
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+	c.IndentedJSON(http.StatusNotFound, presenter.Response{
+		IsSuccess: false,
+		Messages:  []string{"album not found"},
+	})
 }
