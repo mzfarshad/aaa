@@ -20,7 +20,7 @@ func (a *Album) Find(id uint) error {
 	if a == nil {
 		return new(Album).Find(id)
 	}
-	err := db.Where("id = ?", id).First(&a).Error
+	err := db.Where("id = ?", id).Debug().First(&a).Error
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (a *Album) Create() error {
 	if a == nil {
 		return errors.New("trying to create album using nil model")
 	}
-	err := db.Save(a).Error
+	err := db.Debug().Save(a).Error
 	if err != nil {
 		return err
 	}
