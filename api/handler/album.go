@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"web-service-gin/api/presenter"
 	"web-service-gin/models"
 
@@ -10,63 +11,52 @@ import (
 
 // GetAlbums responsde with the list of all album as JSON.
 func GetAlbums(ctx *gin.Context) {
-
-	var list []models.Album
 	title := ctx.Query("title")
+	artist := ctx.Query("artist")
 
-	if title != "" {
-		for _, album := range models.Albums {
-			if album.Title == title {
-				list = append(list, album)
-			}
-		}
-		ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(list))
+	var list models.AlbumList
+	if err := list.Search(title, artist); err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(models.Albums))
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(list))
 }
 
 // CreateNewAlbum adds an album from json recived in the requst body.
 func CreateNewAlbum(ctx *gin.Context) {
-	var newAlbum models.Album
+	var req presenter.CreateAlbumRequest
 	//call bindjson to bind the recived json to newAlbum.
-	if err := ctx.BindJSON(&newAlbum); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.
-			NewFailed("invalid body").
-			AppendMessage("test error"))
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body").AppendMessage("test error"))
 		return
 	}
-	//add newAlbum to slice
-	models.Albums = append(models.Albums, newAlbum)
-	ctx.IndentedJSON(http.StatusCreated, presenter.
-		NewSuccess(newAlbum).
-		AppendMessage("successfully created").
-		AppendMessage("test message"),
-	)
+	album := &models.Album{
+		Title:  req.Title,
+		Artist: req.Artist,
+		Price:  req.Price,
+	}
+	if err := album.Create(); err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
+		return
+	}
+	ctx.IndentedJSON(http.StatusCreated, presenter.NewSuccess(album).AppendMessage("successfully created"))
 }
 
 /*
-	GetAlbumByID locates the album whose ID value matches the id
-
+GetAlbumByID locates the album whose ID value matches the id
 parameter sent by the client, then returns that album as a response.
 */
 func GetAlbumByID(ctx *gin.Context) {
-	id := ctx.Param("id")
-
-	/* Loop over the list of models.Albums, looking for
-	   an album whose ID value matches the parameter.*/
-	for _, album := range models.Albums {
-		if album.ID == id {
-			ctx.IndentedJSON(http.StatusOK, presenter.Response{
-				Data:      album,
-				IsSuccess: true,
-			})
-			return
-		}
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid id"))
+		return
 	}
-	ctx.IndentedJSON(http.StatusNotFound, presenter.Response{
-		IsSuccess: false,
-		Messages:  []string{"album not found"},
-	})
+	album := new(models.Album)
+	if err := album.Find(uint(id)); err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("album not found"))
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(album))
 }
