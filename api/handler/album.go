@@ -14,12 +14,13 @@ func GetAlbums(ctx *gin.Context) {
 	title := ctx.Query("title")
 	artist := ctx.Query("artist")
 
-	var list models.AlbumList
-	if err := list.Search(title, artist); err != nil {
+	var models models.AlbumList
+	if err := models.Search(title, artist); err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(list))
+	response := make(presenter.AlbumList, len(models)).From(models)
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response))
 }
 
 // CreateNewAlbum adds an album from json recived in the requst body.
@@ -39,7 +40,8 @@ func CreateNewAlbum(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-	ctx.IndentedJSON(http.StatusCreated, presenter.NewSuccess(album).AppendMessage("successfully created"))
+	response := new(presenter.Album).From(album)
+	ctx.IndentedJSON(http.StatusCreated, presenter.NewSuccess(response).AppendMessage("successfully created"))
 }
 
 /*
@@ -58,5 +60,6 @@ func GetAlbumByID(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("album not found"))
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(album))
+	response := new(presenter.Album).From(album)
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response))
 }

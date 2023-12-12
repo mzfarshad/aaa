@@ -8,20 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// // Albums slice to seed record Album data
-// var Albums = []Album{
-// 	{ID: "1", Title: "faryad", Artist: "dariush", Price: 23.4},
-// 	{ID: "4", Title: "faryad", Artist: "hayedeh", Price: 28.4},
-// 	{ID: "2", Title: "pariche", Artist: "moien", Price: 25.7},
-// 	{ID: "3", Title: "talab", Artist: "ebi", Price: 20.5},
-// }
-
 // Album represents data about a album record
 type Album struct {
 	gorm.Model
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
+	Title  string
+	Artist string
+	Price  float64
 }
 
 func (a *Album) Find(id uint) error {
