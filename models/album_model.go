@@ -41,7 +41,7 @@ func (a *Album) Create() error {
 
 type AlbumList []*Album
 
-func (list *AlbumList) Search(artist, title string) error {
+func (list *AlbumList) Search(title, artist string) error {
 	query := db.WithContext(context.Background())
 	if artist != "" {
 		query = query.Where("artist = ?", artist)
