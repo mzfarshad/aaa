@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"sync"
 )
 
@@ -9,12 +10,18 @@ var once sync.Once
 
 type Config interface {
 	Postgres() *postgres
+	JWT() *jwt
 }
 
 func Get() Config {
 	once.Do(
 		func() {
-			config.postgres = *new(postgres).fromEnv()
+			psql, err := new(postgres).fromEnv()
+			if err != nil {
+				log.Println(err)
+			}
+			config.postgres = *psql
+			config.jwt = *new(jwt).fromEnv()
 		},
 	)
 	return config
@@ -22,8 +29,13 @@ func Get() Config {
 
 type model struct {
 	postgres
+	jwt
 }
 
 func (m model) Postgres() *postgres {
 	return &m.postgres
+}
+
+func (m model) JWT() *jwt {
+	return &m.jwt
 }

@@ -1,8 +1,8 @@
 package config
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 )
@@ -16,10 +16,10 @@ type postgres struct {
 	TimeZone string
 }
 
-func (p *postgres) fromEnv() *postgres {
+func (p *postgres) fromEnv() (*postgres, error) {
 	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
-		log.Fatal("invalid db port")
+		return p, errors.New("invalid db port: " + err.Error())
 	}
 	p.Host = os.Getenv("DB_HOST")
 	p.Port = port
@@ -27,7 +27,7 @@ func (p *postgres) fromEnv() *postgres {
 	p.Pass = os.Getenv("DB_PASS")
 	p.Name = os.Getenv("DB_NAME")
 	p.TimeZone = os.Getenv("DB_TIMEZONE")
-	return p
+	return p, nil
 }
 
 func (p *postgres) DSN() string {
