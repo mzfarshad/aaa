@@ -53,5 +53,7 @@ func (list *AlbumList) Search(title, artist string) error {
 	if err := query.Debug().Find(&list).Error; err != nil {
 		return err
 	}
+	// TODO: @Farshad
+	// Get priceFrom and priceTo values and filter the albums in the given range.
 	return nil
 }
