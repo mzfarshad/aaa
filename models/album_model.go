@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"gorm.io/gorm"
@@ -44,10 +45,10 @@ type AlbumList []*Album
 func (list *AlbumList) Search(title, artist string) error {
 	query := db.WithContext(context.Background())
 	if artist != "" {
-		query = query.Where("artist = ?", artist)
+		query = query.Where("artist ILIKE ?", fmt.Sprintf("%%%s%%", artist))
 	}
 	if title != "" {
-		query = query.Where("title = ?", title)
+		query = query.Where("title ILIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
 	if err := query.Debug().Find(&list).Error; err != nil {
 		return err
