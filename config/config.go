@@ -7,21 +7,29 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var config model
 var once sync.Once
-var Config config
 
-type config struct {
-	Postgres postgres
+type Config interface {
+	Postgres() postgres
 }
 
-func Get() config {
+func Get() Config {
 	once.Do(
 		func() {
 			if err := godotenv.Load("../.env"); err != nil {
 				log.Fatalf("failed to load .env file: %s", err)
 			}
-			Config.Postgres = *new(postgres).fromEnv()
+			config.postgres = *new(postgres).fromEnv()
 		},
 	)
-	return Config
+	return config
+}
+
+type model struct {
+	postgres
+}
+
+func (m model) Postgres() postgres {
+	return m.postgres
 }
