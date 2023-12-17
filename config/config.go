@@ -18,7 +18,7 @@ func Get() config {
 	once.Do(
 		func() {
 			if err := godotenv.Load("../.env"); err != nil {
-				log.Fatalf("Error loading .env file : %s", err)
+				log.Fatalf("failed to load .env file: %s", err)
 			}
 			Config.Postgres = *new(postgres).fromEnv()
 		},
