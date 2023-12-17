@@ -1,19 +1,22 @@
 package models
 
 import (
-	"gorm.io/driver/sqlite"
+	"web-service-gin/config"
+
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
-func init() {
+func ConnectToPostgres() error {
 	var err error
-	db, err = gorm.Open(sqlite.Open("aaa.db"), &gorm.Config{})
+	psql := config.Get().Postgres()
+	db, err = gorm.Open(postgres.Open(psql.DSN()), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		return err
 	}
-	migrate(db)
+	return migrate(db)
 }
 
 func migrate(db *gorm.DB) error {

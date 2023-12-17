@@ -7,6 +7,14 @@ import (
 )
 
 func TestGet_Postgres(t *testing.T) {
+	err := os.Setenv("DB_HOST", "localhost")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	err = os.Setenv("DB_PORT", "5432")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
 	// Happy test case
 	cfg := config.Get()
 	if cfg == nil {
@@ -16,7 +24,7 @@ func TestGet_Postgres(t *testing.T) {
 		t.Errorf("expected postgres.host = %s, got %s", "localhost", cfg.Postgres().Host)
 	}
 	// Test case 1
-	err := os.Setenv("DB_HOST", "updated-db-host-value-using-os.Setenv") // Developer mistake in a goroutine!
+	err = os.Setenv("DB_HOST", "updated-db-host-value-using-os.Setenv") // Developer mistake in a goroutine!
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
