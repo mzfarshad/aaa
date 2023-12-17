@@ -20,5 +20,9 @@ func ConnectToPostgres() error {
 }
 
 func migrate(db *gorm.DB) error {
-	return db.AutoMigrate(&Album{})
+	return db.AutoMigrate(
+		&Album{},
+		&User{},
+		// ... new models will be added
+	)
 }

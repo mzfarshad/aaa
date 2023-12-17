@@ -20,6 +20,10 @@ func main() {
 		panic("failed to connect database")
 	}
 	router := gin.Default()
+	auth := router.Group("/auth")
+	auth.POST("/signin", handler.SignIn)
+	auth.POST("/signup", handler.SignUp)
+
 	router.GET("/albums", handler.GetAlbums)
 	router.GET("/albums/:id", handler.GetAlbumByID)
 	router.POST("/albums", handler.CreateNewAlbum)

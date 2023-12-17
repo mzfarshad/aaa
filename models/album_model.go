@@ -54,6 +54,6 @@ func (list *AlbumList) Search(title, artist string) error {
 		return err
 	}
 	// TODO: @Farshad
-	// Get priceFrom and priceTo values and filter the albums in the given range.
+	// Get fromPrcie and toPrice values and filter the albums in the given range.
 	return nil
 }
