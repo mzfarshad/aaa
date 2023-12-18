@@ -42,7 +42,7 @@ func (a *Album) Create() error {
 
 type AlbumList []*Album
 
-func (list *AlbumList) Search(title, artist string) error {
+func (list *AlbumList) Search(title, artist string, fromPrice, toPrice float64) error {
 	query := db.WithContext(context.Background())
 	if artist != "" {
 		query = query.Where("artist ILIKE ?", fmt.Sprintf("%%%s%%", artist))
@@ -50,10 +50,17 @@ func (list *AlbumList) Search(title, artist string) error {
 	if title != "" {
 		query = query.Where("title ILIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
+	// TODO: @Farshad
+	// Get fromPrcie and toPrice values and filter the albums in the given range.
+	if fromPrice > 0 {
+		query = query.Where("price >= ?", fromPrice)
+	}
+	if toPrice > 0 {
+		query = query.Where("price <= ?", toPrice)
+	}
 	if err := query.Debug().Find(&list).Error; err != nil {
 		return err
 	}
-	// TODO: @Farshad
-	// Get fromPrcie and toPrice values and filter the albums in the given range.
+
 	return nil
 }
