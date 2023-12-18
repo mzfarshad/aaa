@@ -12,10 +12,10 @@ import (
 
 // SignIn
 func SignIn(ctx *gin.Context) {
-	var req presenter.LoginRequest
+	var req presenter.SignInRequest
 	//call bindjson to bind the recived json to newAlbum.
 	if err := ctx.BindJSON(&req); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body").AppendMessage("test error"))
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
 		return
 	}
 	// TODO: @Farshad
