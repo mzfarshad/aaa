@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"web-service-gin/api/presenter"
 	"web-service-gin/models"
 	"web-service-gin/pkg/jwt"
@@ -14,21 +15,16 @@ import (
 func SignIn(ctx *gin.Context) {
 	var req presenter.SignInRequest
 	//call bindjson to bind the recived json to newAlbum.
-	if err := ctx.BindJSON(&req); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		messages := strings.Split(err.Error(), "\n")
+		res := presenter.NewFailed("failed to bind json").AppendMessages(messages...)
+		ctx.IndentedJSON(http.StatusBadRequest, res)
 		return
 	}
-	if req.Email == "" {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("email is required"))
-		return
-	}
-	if req.Password == "" {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("password is required"))
-		return
-	}
+
 	// TODO: @Farshad
-	// 0. Get user by email from database, or return error
-	// 1. Check if req.Password == user.Password
+	// 0. Get user by email from database, or return "email not found" error
+	// 1. Check if req.Password == user.Password, or return "invalid email or password" error
 	userType := "user"
 	// 2. change token user type claim if user is admin
 	// if user.IsAdmin {
@@ -40,13 +36,13 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 	response := presenter.Token{Access: token}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessage("successfully signed in"))
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessages("successfully signed in"))
 }
 
 // SignUp creates a user by email in case of no duplication
 func SignUp(ctx *gin.Context) {
 	var req presenter.SignUpRequest
-	if err := ctx.BindJSON(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
 		return
 	}
@@ -74,5 +70,5 @@ func SignUp(ctx *gin.Context) {
 		return
 	}
 	response := presenter.Token{Access: token}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessage("successfully signed up"))
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessages("successfully signed up"))
 }

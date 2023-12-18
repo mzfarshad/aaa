@@ -38,7 +38,7 @@ func CreateNewAlbum(ctx *gin.Context) {
 	var req presenter.CreateAlbumRequest
 	//call bindjson to bind the recived json to newAlbum.
 	if err := ctx.BindJSON(&req); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body").AppendMessage("test error"))
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
 		return
 	}
 	album := &models.Album{
@@ -51,7 +51,7 @@ func CreateNewAlbum(ctx *gin.Context) {
 		return
 	}
 	response := new(presenter.Album).From(album)
-	ctx.IndentedJSON(http.StatusCreated, presenter.NewSuccess(response).AppendMessage("successfully created"))
+	ctx.IndentedJSON(http.StatusCreated, presenter.NewSuccess(response).AppendMessages("successfully created"))
 }
 
 /*
