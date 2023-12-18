@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"web-service-gin/models"
 	"web-service-gin/pkg/jwt"
 )
 
@@ -12,7 +13,7 @@ func TestNewAccessToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	token, err := jwt.NewAccessToken("x@y.z", "admin")
+	token, err := jwt.NewAccessToken("x@y.z", models.UserTypeAdmin)
 	if err != nil {
 		t.Fatalf("expected new access token, got err: %s", err.Error())
 	}

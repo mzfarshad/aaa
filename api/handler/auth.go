@@ -64,7 +64,7 @@ func SignUp(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-	token, err := jwt.NewAccessToken(req.Email, "user")
+	token, err := jwt.NewAccessToken(req.Email, models.UserTypeUser)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
