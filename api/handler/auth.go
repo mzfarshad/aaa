@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"web-service-gin/api/presenter"
+	"web-service-gin/models"
 	"web-service-gin/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
@@ -39,4 +40,34 @@ func SignUp(ctx *gin.Context) {
 	// 1. Get request body from user (email, password)
 	// 2. Check if given email does not exist in database, or return error
 	// 3. Create a new user in users table
+	var req presenter.SignUpRequest
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
+		return
+	}
+	user := new(models.User)
+
+	// if err := user.FindByEmail(req.Email); err != nil {
+	// 	if !errors.Is(err, errors.New("email not found")) {
+	// 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
+	// 		return
+	// 	}
+	// }
+	// if user.ID > 0 { //user with request email exists
+	// 	ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed("email already signed up, please login"))
+	// 	return
+	// }
+	user.Email = req.Email
+	user.Password = req.Password
+	if err := user.Create(); err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
+		return
+	}
+	token, err := jwt.NewAccessToken(req.Email, "user")
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
+		return
+	}
+	response := presenter.Token{Access: token}
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessage("successfully signed up"))
 }
