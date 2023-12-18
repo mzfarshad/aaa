@@ -14,6 +14,7 @@ type User struct {
 	gorm.Model
 	Email    string `gorm:"unique"`
 	Password string
+	Type     UserType `gorm:"default:user"`
 }
 
 func (u *User) FindByEmail(email string) error {

@@ -25,10 +25,10 @@ func SignIn(ctx *gin.Context) {
 	// TODO: @Farshad
 	// 0. Get user by email from database, or return "email not found" error
 	// 1. Check if req.Password == user.Password, or return "invalid email or password" error
-	userType := "user"
+	userType := models.UserTypeUser
 	// 2. change token user type claim if user is admin
 	// if user.IsAdmin {
-	// 	userType = "admin"
+	// 	userType = models.UserTypeAdmin
 	// }
 	token, err := jwt.NewAccessToken(req.Email, userType)
 	if err != nil {
