@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"strconv"
 	"web-service-gin/api/presenter"
@@ -65,7 +67,12 @@ func GetAlbumByID(ctx *gin.Context) {
 	}
 	album := new(models.Album)
 	if err := album.Find(uint(id)); err != nil {
-		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("album not found"))
+		if errors.Is(err, models.ErrAlbumNotFound) {
+			ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("album not found"))
+			return
+		}
+		log.Printf("failed to retrieve album >>> err: %v", err)
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed("please try again"))
 		return
 	}
 	response := new(presenter.Album).From(album)
