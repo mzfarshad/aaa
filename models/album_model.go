@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var ErrAlbumNotFound = errors.New("album not found")
+
 // Album represents data about a album record
 type Album struct {
 	gorm.Model
@@ -23,6 +25,10 @@ func (a *Album) Find(id uint) error {
 	}
 	err := db.Where("id = ?", id).Debug().First(&a).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrAlbumNotFound
+			// return errs.NewNotFound("album") @TODO
+		}
 		return err
 	}
 	return nil
