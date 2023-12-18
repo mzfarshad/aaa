@@ -18,6 +18,14 @@ func SignIn(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid body"))
 		return
 	}
+	if req.Email == "" {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("email is required"))
+		return
+	}
+	if req.Password == "" {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("password is required"))
+		return
+	}
 	// TODO: @Farshad
 	// 0. Get user by email from database, or return error
 	// 1. Check if req.Password == user.Password
@@ -32,7 +40,7 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 	response := presenter.Token{Access: token}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessage("successfull login"))
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response).AppendMessage("successfully signed in"))
 }
 
 // SignUp creates a user by email in case of no duplication
@@ -51,7 +59,7 @@ func SignUp(ctx *gin.Context) {
 		}
 	}
 	if user.ID > 0 { //user with request email exists
-		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed("email already signed up, please login"))
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed("email already signed up, please sign in"))
 		return
 	}
 	user.Email = req.Email
