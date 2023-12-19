@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"web-service-gin/api/presenter"
@@ -22,17 +23,15 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: @Farshad
-	// 0. Get user by email from database, or return "email not found" error
-	// 1. Check if req.Password == user.Password, or return "invalid email or password" error
-
-	// user := &models.User{
-	// 	Email:    req.Email,
-	// 	Password: req.Password,
-	// }
 	user := new(models.User)
 
 	if err := user.FindByEmail(req.Email); err != nil {
+		if !errors.Is(err, models.ErrEmailNotFound) {
+			ctx.IndentedJSON(http.StatusInternalServerError, presenter.
+				NewFailed("something is wrong, please try again"))
+			log.Print(err)
+			return
+		}
 		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("email not found").
 			AppendMessages("please try again"))
 		return
