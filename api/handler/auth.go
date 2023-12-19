@@ -25,6 +25,26 @@ func SignIn(ctx *gin.Context) {
 	// TODO: @Farshad
 	// 0. Get user by email from database, or return "email not found" error
 	// 1. Check if req.Password == user.Password, or return "invalid email or password" error
+
+	// user := &models.User{
+	// 	Email:    req.Email,
+	// 	Password: req.Password,
+	// }
+	user := new(models.User)
+
+	if err := user.FindByEmail(req.Email); err != nil {
+		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("email not found").
+			AppendMessages("please try again"))
+		return
+	}
+
+	if req.Password != user.Password {
+		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("invalid password").
+			AppendMessages("please try again"))
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess("successfully signed in"))
+
 	userType := models.UserTypeUser
 	// 2. change token user type claim if user is admin
 	// if user.IsAdmin {
