@@ -18,6 +18,25 @@ type User struct {
 	Type     UserType `gorm:"default:user"`
 }
 
+func (u *User) WithHashedPassword() error {
+	HashedBytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+	if err != nil {
+		log.Printf("failed to hash password >>> err: %s", err.Error())
+		return err
+	}
+	u.Password = string(HashedBytes)
+	return nil
+}
+
+func (u *User) IsPasswordCorrect(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
+}
+
+/*
+DB Queries
+*/
+
 func (u *User) FindByEmail(email string) error {
 	if u == nil {
 		return new(User).FindByEmail(email)
@@ -36,8 +55,9 @@ func (u *User) Create() error {
 	if u == nil {
 		return errors.New("trying to create user using nil model")
 	}
-	hashPass := HashPassword(u.Password)
-	u.Password = hashPass
+	if err := u.WithHashedPassword(); err != nil {
+		return err
+	}
 	err := db.Debug().Save(u).Error
 	if err != nil {
 		return err
@@ -46,15 +66,18 @@ func (u *User) Create() error {
 	return nil
 }
 
-func HashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		panic("something is wrong, try again ")
-	}
-	return string(bytes)
-}
+// TODO: Remove the following functions.
+// They have been been defined as methods on user model.
 
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
+// func HashPassword(password string) string {
+// 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+// 	if err != nil {
+// 		panic("something is wrong, try again ")
+// 	}
+// 	return string(bytes)
+// }
+
+// func CheckPasswordHash(password, hash string) bool {
+// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+// 	return err == nil
+// }

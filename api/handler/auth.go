@@ -37,17 +37,11 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	// if req.Password != user.Password {
-	// 	ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("invalid password").
-	// 		AppendMessages("please try again"))
-	// 	return
-	// }
-	if !models.CheckPasswordHash(req.Password, user.Password) {
+	if !user.IsPasswordCorrect(req.Password) {
 		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("invalid password").
 			AppendMessages("please try again"))
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess("successfully signed in"))
 
 	userType := models.UserTypeUser
 	// 2. change token user type claim if user is admin
