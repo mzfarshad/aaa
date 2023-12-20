@@ -17,7 +17,7 @@ func (req SignInRequest) Validate() error {
 	if req.Email == "" {
 		return errors.New("email is required")
 	}
-	// TODO: @Farshad
+	// TOREAD: @Farshad
 	//Learn more about regular expressions in https://regexone.com
 	mathed, err := regexp.MatchString(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`, req.Email)
 	if err != nil || !mathed {

@@ -56,8 +56,6 @@ func (list *AlbumList) Search(title, artist string, fromPrice, toPrice float64) 
 	if title != "" {
 		query = query.Where("title ILIKE ?", fmt.Sprintf("%%%s%%", title))
 	}
-	// TODO: @Farshad
-	// Get fromPrcie and toPrice values and filter the albums in the given range.
 	if fromPrice > 0 {
 		query = query.Where("price >= ?", fromPrice)
 	}
