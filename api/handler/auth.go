@@ -37,7 +37,12 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	if req.Password != user.Password {
+	// if req.Password != user.Password {
+	// 	ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("invalid password").
+	// 		AppendMessages("please try again"))
+	// 	return
+	// }
+	if !models.CheckPasswordHash(req.Password, user.Password) {
 		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("invalid password").
 			AppendMessages("please try again"))
 		return
