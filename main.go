@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"web-service-gin/api/handler"
+	"web-service-gin/api/middlewares"
 	"web-service-gin/models"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +21,10 @@ func main() {
 		panic("failed to connect database")
 	}
 	router := gin.Default()
+	router.Use(middlewares.Logger)
+
 	auth := router.Group("/auth")
+
 	auth.POST("/signin", handler.SignIn)
 	auth.POST("/signup", handler.SignUp)
 

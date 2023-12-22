@@ -15,7 +15,7 @@ import (
 func GetAlbums(ctx *gin.Context) {
 	title := ctx.Query("title")
 	artist := ctx.Query("artist")
-	fromPrice, err := strconv.Atoi(ctx.Query("min_price"))
+	fromPrice, err := strconv.Atoi(ctx.Query("mini_price"))
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid price"))
 	}
