@@ -15,13 +15,24 @@ import (
 func GetAlbums(ctx *gin.Context) {
 	title := ctx.Query("title")
 	artist := ctx.Query("artist")
-	fromPrice, err := strconv.Atoi(ctx.Query("mini_price"))
-	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid price"))
+
+	var fromPrice float64
+	if ctx.Query("mini_price") != "" {
+		miniPrice, err := strconv.Atoi(ctx.Query("mini_price"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid price"))
+			return
+		}
+		fromPrice = float64(miniPrice)
 	}
-	toPrice, err := strconv.Atoi(ctx.Query("max_price"))
-	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid price"))
+	var toPrice float64
+	if ctx.Query("max_price") != "" {
+		maxPrice, err := strconv.Atoi(ctx.Query("max_price"))
+		if err != nil {
+			ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid price"))
+			return
+		}
+		toPrice = float64(maxPrice)
 	}
 
 	var models models.AlbumList
