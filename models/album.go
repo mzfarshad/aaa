@@ -48,19 +48,19 @@ func (a *Album) Create() error {
 
 type AlbumList []*Album
 
-func (list *AlbumList) Search(title, artist string, fromPrice, toPrice float64) error {
+func (list *AlbumList) Search(filter AlbumFilter) error {
 	query := db.WithContext(context.Background())
-	if artist != "" {
-		query = query.Where("artist ILIKE ?", fmt.Sprintf("%%%s%%", artist))
+	if filter.Artist != "" {
+		query = query.Where("artist ILIKE ?", fmt.Sprintf("%%%s%%", filter.Artist))
 	}
-	if title != "" {
-		query = query.Where("title ILIKE ?", fmt.Sprintf("%%%s%%", title))
+	if filter.Title != "" {
+		query = query.Where("title ILIKE ?", fmt.Sprintf("%%%s%%", filter.Title))
 	}
-	if fromPrice > 0 {
-		query = query.Where("price >= ?", fromPrice)
+	if filter.FromPrice > 0 {
+		query = query.Where("price >= ?", filter.FromPrice)
 	}
-	if toPrice > 0 {
-		query = query.Where("price <= ?", toPrice)
+	if filter.ToPrice > 0 {
+		query = query.Where("price <= ?", filter.ToPrice)
 	}
 	if err := query.Debug().Find(&list).Error; err != nil {
 		return err

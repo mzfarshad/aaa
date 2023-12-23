@@ -13,34 +13,20 @@ import (
 
 // GetAlbums responsde with the list of all album as JSON.
 func GetAlbums(ctx *gin.Context) {
-	title := ctx.Query("title")
-	artist := ctx.Query("artist")
-
-	var fromPrice float64
-	if ctx.Query("min_price") != "" {
-		minPrice, err := strconv.Atoi(ctx.Query("min_price"))
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid fromPrice"))
-			return
-		}
-		fromPrice = float64(minPrice)
-	}
-	var toPrice float64
-	if ctx.Query("max_price") != "" {
-		maxPrice, err := strconv.Atoi(ctx.Query("max_price"))
-		if err != nil {
-			ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid toPrice"))
-			return
-		}
-		toPrice = float64(maxPrice)
+	var filter models.AlbumFilter
+	if err := ctx.BindQuery(&filter); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest,
+			presenter.NewFailed("invalid query param").
+				AppendMessages(err.Error()))
+		return
 	}
 
-	var models models.AlbumList
-	if err := models.Search(title, artist, float64(fromPrice), float64(toPrice)); err != nil {
+	var albums models.AlbumList
+	if err := albums.Search(filter); err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-	response := make(presenter.AlbumList, len(models)).From(models)
+	response := make(presenter.AlbumList, len(albums)).From(albums)
 	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(response))
 }
 
