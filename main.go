@@ -21,7 +21,7 @@ func main() {
 		panic("failed to connect database")
 	}
 	router := gin.Default()
-	router.Use(middlewares.Logger)
+	router.Use(middlewares.Authenticate)
 
 	auth := router.Group("/auth")
 
