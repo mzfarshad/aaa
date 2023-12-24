@@ -2,6 +2,8 @@ package middlewares
 
 import (
 	"log"
+	"strings"
+	"web-service-gin/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,10 +19,18 @@ func Authenticate(ctx *gin.Context) {
 	if authHeader == "" {
 		ctx.Next()
 	}
-	log.Println(authHeader)
 	// 2. Remove the word "Bearer" from the authHeader variable, and get the pure token
+	authHeader = strings.TrimPrefix(authHeader, "Bearer ")
+	//log.Println(authHeader)
 	// 3. Search in our jwt package github and implement a method in pkg/jwt to convert a token to the TokenUser struct
 	// 4. Set the context key ("Authenticated-AAA-User") to the result struct
+	tokenUser := new(jwt.TokenUser)
+	tokenUser, err := tokenUser.SetTokenUser(authHeader)
+	if err != nil {
+		log.Printf("invalid token : %s", err)
+	} else {
+		jwt.PrintTokenUser(*tokenUser)
+	}
 	ctx.Next()
 }
 
