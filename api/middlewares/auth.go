@@ -24,12 +24,11 @@ func Authenticate(ctx *gin.Context) {
 	//log.Println(authHeader)
 	// 3. Search in our jwt package github and implement a method in pkg/jwt to convert a token to the TokenUser struct
 	// 4. Set the context key ("Authenticated-AAA-User") to the result struct
-	tokenUser := new(jwt.TokenUser)
-	tokenUser, err := tokenUser.SetTokenUser(authHeader)
+	tokenUser, err := jwt.Validate(authHeader)
 	if err != nil {
 		log.Printf("invalid token : %s", err)
 	} else {
-		jwt.PrintTokenUser(*tokenUser)
+		log.Println(tokenUser)
 	}
 	ctx.Next()
 }
