@@ -21,6 +21,7 @@ func Authenticate(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 	if authHeader == "" {
 		ctx.Next()
+		return
 	}
 	// 2. Remove the word "Bearer" from the authHeader variable, and get the pure token
 	authHeader = strings.TrimPrefix(authHeader, "Bearer ")
@@ -43,6 +44,7 @@ func OnlyUser(ctx *gin.Context) {
 	value, exist := ctx.Get(AuthenticatedUserKey)
 	if !exist {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("required bearer token"))
+		ctx.Next()
 		return
 	}
 	// 1. Cast the above "value" variable to jwt.TokenUser struct (e.g, castedTokenUser variable).
@@ -50,6 +52,7 @@ func OnlyUser(ctx *gin.Context) {
 	castedTokenUser := value.(*jwt.TokenUser)
 	if castedTokenUser.UserType != string(models.UserTypeUser) {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("login is only allowed for the user"))
+		ctx.Next()
 		return
 	}
 	log.Println("Successful user login")
