@@ -11,12 +11,14 @@ import (
 type TokenUser struct {
 	Email    string
 	UserType string
+	Id       uint
 }
 
-func NewAccessToken(email string, userType models.UserType) (string, error) {
+func NewAccessToken(email string, userType models.UserType, id uint) (string, error) {
 	token := gojwt.NewWithClaims(gojwt.SigningMethodHS256, gojwt.MapClaims{
 		"email":     email,
 		"user_type": userType,
+		"id":        id,
 	})
 	secretKey := []byte(config.Get().JWT().SecretKey)
 
@@ -41,11 +43,13 @@ func Validate(tkn string) (*TokenUser, error) {
 	if claim, ok := token.Claims.(gojwt.MapClaims); ok && token.Valid {
 		tokenUser.Email = (claim["email"]).(string)
 		tokenUser.UserType = (claim["user_type"]).(string)
+		tokenId := (claim["id"]).(float64)
+		tokenUser.Id = uint(tokenId)
 		return tokenUser, nil
 	}
 	return nil, fmt.Errorf("invalid token : %s", err)
 }
 
 func (t TokenUser) String() string {
-	return fmt.Sprintf("Email : %s , UserType : %s", t.Email, t.UserType)
+	return fmt.Sprintf("Email : %s , UserType : %s , ID : %v", t.Email, t.UserType, t.Id)
 }

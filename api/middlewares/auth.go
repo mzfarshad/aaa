@@ -31,6 +31,7 @@ func Authenticate(ctx *gin.Context) {
 	tokenUser, err := jwt.Validate(authHeader)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("invalid token"))
+		ctx.Next()
 		return
 	}
 	log.Println(tokenUser)

@@ -13,7 +13,7 @@ func TestNewAccessToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	token, err := jwt.NewAccessToken("x@y.z", models.UserTypeAdmin)
+	token, err := jwt.NewAccessToken("x@y.z", models.UserTypeAdmin, 5)
 	if err != nil {
 		t.Fatalf("expected new access token, got err: %s", err.Error())
 	}

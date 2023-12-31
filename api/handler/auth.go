@@ -48,7 +48,7 @@ func SignIn(ctx *gin.Context) {
 	// if user.IsAdmin {
 	// 	userType = models.UserTypeAdmin
 	// }
-	token, err := jwt.NewAccessToken(req.Email, userType)
+	token, err := jwt.NewAccessToken(req.Email, userType, user.ID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
@@ -82,7 +82,7 @@ func SignUp(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
 	}
-	token, err := jwt.NewAccessToken(req.Email, models.UserTypeUser)
+	token, err := jwt.NewAccessToken(req.Email, models.UserTypeUser, user.ID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()))
 		return
