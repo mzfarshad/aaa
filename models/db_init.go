@@ -23,6 +23,7 @@ func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Album{},
 		&User{},
+		&Following{},
 		// ... new models will be added
 	)
 }
