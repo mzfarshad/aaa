@@ -6,7 +6,7 @@ import (
 
 type Following struct {
 	gorm.Model
-	UserID         uint
+	UserID         uint `gorm:"foriengKey:UserRefer"`
 	FollowedUserID uint
 }
 

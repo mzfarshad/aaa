@@ -31,7 +31,7 @@ func Authenticate(ctx *gin.Context) {
 	tokenUser, err := jwt.Validate(authHeader)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("invalid token"))
-		ctx.Next()
+		ctx.Abort()
 		return
 	}
 	log.Println(tokenUser)
@@ -45,7 +45,7 @@ func OnlyUser(ctx *gin.Context) {
 	value, exist := ctx.Get(AuthenticatedUserKey)
 	if !exist {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("required bearer token"))
-		ctx.Next()
+		ctx.Abort()
 		return
 	}
 	// 1. Cast the above "value" variable to jwt.TokenUser struct (e.g, castedTokenUser variable).
@@ -53,7 +53,7 @@ func OnlyUser(ctx *gin.Context) {
 	castedTokenUser := value.(*jwt.TokenUser)
 	if castedTokenUser.UserType != string(models.UserTypeUser) {
 		ctx.IndentedJSON(http.StatusUnauthorized, presenter.NewFailed("login is only allowed for the user"))
-		ctx.Next()
+		ctx.Abort()
 		return
 	}
 	log.Println("Successful user login")
