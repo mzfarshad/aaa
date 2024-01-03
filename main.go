@@ -31,7 +31,9 @@ func main() {
 	router.GET("/albums", middlewares.OnlyUser, handler.GetAlbums)
 	router.GET("/albums/:id", handler.GetAlbumByID)
 	router.POST("/albums", handler.CreateNewAlbum)
+
 	router.POST("/user/follows/:id", middlewares.OnlyUser, handler.FollowUser)
+	router.GET("/user/follows", middlewares.OnlyUser, handler.Profile)
 
 	router.Run("localhost:8080")
 }

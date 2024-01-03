@@ -24,7 +24,7 @@ func FollowUser(ctx *gin.Context) {
 		return
 	}
 	user := token.(*jwt.TokenUser)
-	if err := models.FindId(id); err != nil {
+	if err := models.FindById(uint(id)); err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, presenter.NewFailed("not found user"))
 		return
 	}
@@ -37,4 +37,26 @@ func FollowUser(ctx *gin.Context) {
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess("success following"))
+}
+
+func Profile(ctx *gin.Context) {
+	strId := ctx.Query("id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("invalid id"))
+		return
+	}
+	if err := models.FindById(uint(id)); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, presenter.NewFailed("not found user"))
+		return
+	}
+	profile := new(models.Profile)
+	userProfile, err := profile.FindProfile(uint(id))
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, presenter.NewFailed(err.Error()).
+			AppendMessages("try again"))
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, presenter.NewSuccess(userProfile))
+
 }
