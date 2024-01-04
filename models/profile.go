@@ -21,7 +21,7 @@ func (p *Profile) FindProfile(id uint) (*Profile, error) {
 	}
 
 	var count1 int64
-	db.Select("user_id").Where("followed_user_id=?", id).Debug().Find(followings).Count(&count1)
+	db.Model(followings).Select("user_id").Where("followed_user_id=?", id).Debug().Count(&count1)
 	follower := int(count1)
 
 	var count2 int64
